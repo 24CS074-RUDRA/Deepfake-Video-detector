@@ -266,11 +266,11 @@ Then open **`http://localhost:3000`**, upload a video, and get a full explainabl
 
 <div align="center">
 
-| Avatar | Name | Student ID | Role |
+| Avatar | Name | Student ID | 
 |:---:|:---:|:---:|:---:|
-| 🧑‍💻 | **Rudra Patel** | 24CS074 | ML Pipeline & Backend |
-| 🧑‍💻 | **Varshil Patel** | 24CS080 | Model Development |
-| 👩‍💻 | **Trusha Patel** | 24CS078 | Frontend & Documentation |
+| 🧑‍💻 | **Rudra Patel** | 24CS074 | 
+| 🧑‍💻 | **Varshil Patel** | 24CS080 | 
+| 👩‍💻 | **Trusha Patel** | 24CS078 | 
 
 </div>
 
