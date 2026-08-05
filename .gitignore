@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+
+# Dataset
+dataset/raw/
+dataset/processed/
+
+# Models
+trained_models/
+
+# Logs
+logs/
+
+# Reports
+reports/
+
+# Temp
+temp/
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
