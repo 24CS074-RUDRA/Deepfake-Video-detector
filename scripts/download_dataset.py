@@ -10,7 +10,7 @@ Run:
     python -m scripts.download_dataset
 """
 
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 import zipfile
 import shutil
 import gdown
@@ -67,42 +67,37 @@ def extract_dataset():
 
     print("\nExtracting dataset...\n")
 
-    RAW_DATASET.mkdir(parents=True, exist_ok=True)
-
     with zipfile.ZipFile(ZIP_FILE, "r") as zip_ref:
+        zip_ref.extractall(RAW_DATASET)
 
-        for member in zip_ref.infolist():
-            member_path = PurePosixPath(member.filename)
-            parts = member_path.parts
+    # Check if an extra folder exists
+    extracted_folders = [
+        folder for folder in RAW_DATASET.iterdir()
+        if folder.is_dir()
+    ]
 
-            # The archive stores the videos below a wrapper directory (for
-            # example, ``face++dataset/ffpp_fake/...``).  Strip that wrapper
-            # so the two class folders live directly in ``dataset/raw``.
-            try:
-                dataset_index = next(
-                    index
-                    for index, part in enumerate(parts)
-                    if part in {"ffpp_real", "ffpp_fake"}
-                )
-            except StopIteration:
-                continue
+    # If there is only one folder (e.g. faceforensics++)
+    # move its contents to dataset/raw
+    if len(extracted_folders) == 1:
 
-            relative_path = parts[dataset_index:]
+        parent = extracted_folders[0]
 
-            # Only extract normal, relative paths from the expected folders.
-            if any(part in {"", ".", ".."} for part in relative_path):
-                raise ValueError(f"Unsafe archive path: {member.filename}")
+        if parent.name not in ["ffpp_real", "ffpp_fake"]:
 
-            destination = RAW_DATASET.joinpath(*relative_path)
+            print(f"Found parent folder: {parent.name}")
 
-            if member.is_dir():
-                destination.mkdir(parents=True, exist_ok=True)
-                continue
+            for item in parent.iterdir():
 
-            destination.parent.mkdir(parents=True, exist_ok=True)
+                destination = RAW_DATASET / item.name
 
-            with zip_ref.open(member) as source, destination.open("wb") as target:
-                shutil.copyfileobj(source, target)
+                if destination.exists():
+                    shutil.rmtree(destination)
+
+                shutil.move(str(item), str(destination))
+
+            parent.rmdir()
+
+            print("Dataset organized successfully.")
 
 
 # ----------------------------------------------------------
