@@ -31,8 +31,7 @@ def download_dataset():
     gdown.download(
         DATASET_URL,
         str(ZIP_FILE),
-        quiet=False,
-        fuzzy=True
+        quiet=False
     )
 
 
@@ -42,6 +41,18 @@ def extract_dataset():
 
     with zipfile.ZipFile(ZIP_FILE, "r") as zip_ref:
         zip_ref.extractall(RAW_DATASET)
+
+    nested_dir = RAW_DATASET / "face++dataset"
+    if nested_dir.exists():
+        for item in nested_dir.iterdir():
+            dest = RAW_DATASET / item.name
+            if dest.exists():
+                if dest.is_dir():
+                    shutil.rmtree(dest)
+                else:
+                    dest.unlink()
+            shutil.move(str(item), str(dest))
+        shutil.rmtree(nested_dir)
 
 
 def verify_dataset():

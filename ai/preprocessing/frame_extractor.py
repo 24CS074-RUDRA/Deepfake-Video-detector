@@ -18,7 +18,8 @@ from ai.utils.config import (
 )
 
 
-FRAME_INTERVAL = 10
+# Frame sampling interval (e.g., 10 means extract every 10th frame)
+FRAME_INTERVAL = 30
 
 
 def extract_video_frames(video_path: Path, output_folder: Path):
@@ -64,6 +65,9 @@ def process_folder(input_folder: Path, output_folder: Path):
         return
 
     videos = sorted(input_folder.glob("*.mp4"))
+    
+    # TIP: For a quick verification run, you can slice the video list (e.g., videos = videos[:5])
+    # to process only a few videos instead of the entire dataset.
 
     print(f"\nProcessing {len(videos)} videos from {input_folder.name}")
 
