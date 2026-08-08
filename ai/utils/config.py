@@ -37,7 +37,3 @@ load_dotenv()
 DATASET_NAME = os.getenv("DATASET_NAME")
 
 DATASET_FILE_ID = os.getenv("DATASET_FILE_ID")
-
-DATASET_URL = (
-    f"https://drive.google.com/uc?id={DATASET_FILE_ID}"
-)
