@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact & Inquiries — DeepShield AI</title>
+  
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/animations.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="/index.html" class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="nav-logo-text">DEEPSHIELD</span>
+          <span class="nav-logo-sub">Forensic Intelligence</span>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="/index.html" class="nav-link">Overview</a></li>
+        <li><a href="/pages/upload.html" class="nav-link">Analyze Media</a></li>
+        <li><a href="/pages/about.html" class="nav-link">Technology</a></li>
+        <li><a href="/pages/contact.html" class="nav-link active">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="/pages/upload.html" class="btn btn-primary btn-sm">Analyze Video</a>
+      </div>
+
+      <button class="hamburger" aria-label="Toggle navigation">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="mobile-nav">
+    <a href="/index.html" class="nav-link">Overview</a>
+    <a href="/pages/upload.html" class="nav-link">Analyze Media</a>
+    <a href="/pages/about.html" class="nav-link">Technology</a>
+    <a href="/pages/contact.html" class="nav-link active">Contact</a>
+  </div>
+
+  <!-- Main Content -->
+  <main style="padding-top: 9rem; padding-bottom: 6rem; position: relative; z-index: 2;">
+    <div class="container">
+
+      <!-- Header -->
+      <div style="text-align: center; max-width: 680px; margin: 0 auto 5rem auto;">
+        <span class="eyebrow">INQUIRIES & ADVISORY</span>
+        <h1 style="font-size: 3rem; font-family: var(--font-heading); margin-bottom: 1rem;">Direct Correspondence</h1>
+        <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7;">
+          Have questions regarding enterprise API deployment, forensic investigation support, or media verification partnerships? Speak with our team.
+        </p>
+      </div>
+
+      <!-- 2 Column Layout (Form Left, Info Right) -->
+      <div class="contact-layout" style="display: grid; grid-template-columns: 1.8fr 1fr; gap: 3rem; align-items: start;">
+        
+        <!-- Form Left -->
+        <div class="card card-solid" style="padding: 2.5rem;">
+          <h2 style="font-size: 1.5rem; font-family: var(--font-heading); margin-bottom: 1.75rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+            Send a Transmission
+          </h2>
+          
+          <form id="contact-form" novalidate>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="results-grid-2col">
+              <div class="form-group">
+                <label class="form-label">Full Name *</label>
+                <input type="text" id="contact-name" class="form-input" placeholder="e.g. Sarah Vance" required />
+                <div id="err-name" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: none;">Please enter your full name</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Email Address *</label>
+                <input type="email" id="contact-email" class="form-input" placeholder="name@organization.com" required />
+                <div id="err-email" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: none;">Please enter a valid email address</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Inquiry Subject *</label>
+              <select id="contact-subject" class="form-select" required>
+                <option value="">Select an inquiry topic...</option>
+                <option value="api">Enterprise API & Licensing</option>
+                <option value="forensic">Forensic Investigation Support</option>
+                <option value="media">Newsroom & Media Verification</option>
+                <option value="technical">Technical Support & Audits</option>
+                <option value="other">General Inquiry</option>
+              </select>
+              <div id="err-subject" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: none;">Please select an inquiry topic</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Message * (minimum 20 characters)</label>
+              <textarea id="contact-message" class="form-textarea" placeholder="Describe your verification or media audit requirements..." required></textarea>
+              <div id="err-message" style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: none;">Please enter a message (minimum 20 characters)</div>
+            </div>
+
+            <button type="submit" id="submit-contact-btn" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 0.5rem;">
+              Transmit Message
+            </button>
+          </form>
+        </div>
+
+        <!-- Info Right -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          
+          <div class="card card-solid" style="padding: 1.75rem;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem;">Direct Channel</div>
+            <h3 style="font-size: 1.15rem; font-family: var(--font-heading); margin-bottom: 0.5rem;">Email Dispatch</h3>
+            <div style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
+              inquiries@deepshield.ai
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">Direct liaison for enterprise audits and media verification protocols.</p>
+          </div>
+
+          <div class="card card-solid" style="padding: 1.75rem;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem;">Response Protocol</div>
+            <h3 style="font-size: 1.15rem; font-family: var(--font-heading); margin-bottom: 0.5rem;">&lt; 2 Hour Response</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">Priority response protocol maintained for active media authenticity and law enforcement inquiries.</p>
+          </div>
+
+          <div class="card card-solid" style="padding: 1.75rem;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem;">Coverage</div>
+            <h3 style="font-size: 1.15rem; font-family: var(--font-heading); margin-bottom: 0.5rem;">Global Operations</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">Distributed global research teams across North America, Europe, and Asia-Pacific.</p>
+          </div>
+
+          <div class="card card-solid" style="padding: 1.5rem; text-align: center;">
+            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Looking for quick answers?</div>
+            <a href="/index.html#faq" style="color: var(--text-primary); font-weight: 600; text-decoration: underline; font-size: 0.9rem;">
+              Browse Frequently Asked Questions →
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>© 2026 DeepShield AI, Inc. All rights reserved.</div>
+        <div>Forensic Media Intelligence Engine</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('contact-form');
+      const nameInput = document.getElementById('contact-name');
+      const emailInput = document.getElementById('contact-email');
+      const subjectSelect = document.getElementById('contact-subject');
+      const messageTextarea = document.getElementById('contact-message');
+      const submitBtn = document.getElementById('submit-contact-btn');
+
+      if (!form) return;
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // Reset error messages
+        document.getElementById('err-name').style.display = 'none';
+        document.getElementById('err-email').style.display = 'none';
+        document.getElementById('err-subject').style.display = 'none';
+        document.getElementById('err-message').style.display = 'none';
+
+        let isValid = true;
+
+        if (!nameInput.value.trim()) {
+          document.getElementById('err-name').style.display = 'block';
+          isValid = false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
+          document.getElementById('err-email').style.display = 'block';
+          isValid = false;
+        }
+
+        if (!subjectSelect.value) {
+          document.getElementById('err-subject').style.display = 'block';
+          isValid = false;
+        }
+
+        if (!messageTextarea.value.trim() || messageTextarea.value.trim().length < 20) {
+          document.getElementById('err-message').style.display = 'block';
+          isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // Loading state on button
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Transmitting Message...';
+
+        setTimeout(() => {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+          
+          if (window.showToast) {
+            window.showToast('Your message has been successfully transmitted.', 'success', 'Transmission Delivered');
+          }
+
+          form.reset();
+        }, 1200);
+      });
+    });
+  </script>
+</body>
+</html>

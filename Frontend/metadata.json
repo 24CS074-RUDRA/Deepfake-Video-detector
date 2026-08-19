@@ -1,0 +1,6 @@
+{
+  "name": "DeepShield AI",
+  "description": "An AI deepfake video detector web application featuring video upload analysis, confidence scoring, audio/face forensic inspection, and detailed reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

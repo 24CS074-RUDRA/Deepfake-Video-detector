@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certified Forensic Audit Report — DeepShield AI</title>
+  
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/animations.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+</head>
+<body style="background-color: var(--bg-darker);">
+
+  <!-- Sticky Top Action Bar for Screen Viewing -->
+  <div class="no-print" style="position: sticky; top: 0; left: 0; width: 100%; z-index: 100; background: rgba(250, 248, 245, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-subtle); padding: 1rem 0;">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+      <a href="/pages/results.html" class="btn btn-outline btn-sm">
+        ← Back to Results
+      </a>
+
+      <div style="display: flex; gap: 0.85rem;">
+        <button id="download-json-btn" class="btn btn-outline btn-sm">
+          Download JSON
+        </button>
+        <button id="download-pdf-btn" class="btn btn-primary btn-sm">
+          Export PDF Document
+        </button>
+        <button id="print-report-btn" class="btn btn-outline btn-sm">
+          Print
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Printable Report Sheet Container -->
+  <main style="padding-top: 3.5rem; padding-bottom: 6rem; position: relative; z-index: 2;">
+    <div class="container" style="max-width: 860px;">
+      
+      <div class="card card-solid" style="padding: 3.5rem; border: 1px solid var(--border-subtle); background: #FFFFFF; box-shadow: var(--shadow-md);">
+        
+        <!-- Report Document Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 2rem; border-bottom: 2px solid var(--primary); margin-bottom: 2.5rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+              <div class="nav-logo-icon" style="width: 32px; height: 32px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <span style="font-family: var(--font-heading); font-weight: 600; font-size: 1.5rem; color: var(--text-primary);">DEEPSHIELD AI</span>
+            </div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);">CERTIFIED MEDIA FORENSIC INTELLIGENCE AUDIT</div>
+          </div>
+
+          <div style="text-align: right; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary);">
+            <div>Report Reference: <span id="report-id-text" style="color: var(--text-primary); font-weight: 700;">#DS-89412</span></div>
+            <div>Timestamp: <span id="report-date-text">-</span></div>
+            <div style="color: var(--success); font-weight: 600; margin-top: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;">● SHA-256 VERIFIED AUDIT</div>
+          </div>
+        </div>
+
+        <!-- Section 1: Verdict Summary Header -->
+        <div style="background: #FAF8F5; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.75rem; margin-bottom: 2.5rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.35rem;">Forensic Classification Verdict</div>
+              <div id="report-verdict-badge" class="badge badge-fake" style="font-size: 1rem; padding: 0.4rem 1rem;">
+                VERDICT: FAKE
+              </div>
+            </div>
+
+            <div style="text-align: right;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em;">AI Confidence Score</div>
+              <div id="report-confidence-score" style="font-size: 1.8rem; font-weight: 500; font-family: var(--font-heading); color: var(--text-primary);">94.7%</div>
+            </div>
+
+            <div style="text-align: right;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em;">Risk Assessment</div>
+              <div id="report-risk-level" style="font-size: 1.15rem; font-family: var(--font-heading); color: var(--danger);">Critical (92/100)</div>
+            </div>
+          </div>
+
+          <div style="padding-top: 1.25rem; border-top: 1px dashed var(--border-subtle);">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.3rem;">Executive Diagnostic Summary:</div>
+            <div id="report-explanation-text" style="font-size: 0.95rem; font-family: var(--font-serif); font-style: italic; color: var(--text-secondary); line-height: 1.65;">
+              -
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Video Information Table -->
+        <div style="margin-bottom: 2.5rem;">
+          <h3 style="font-size: 1.15rem; font-family: var(--font-heading); margin-bottom: 1rem; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;">
+            1. Media Target File Specifications
+          </h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;" id="report-meta-table">
+            <!-- Populated by report.js -->
+          </table>
+        </div>
+
+        <!-- Section 3: Suspicious Indicators Matrix -->
+        <div style="margin-bottom: 2.5rem;">
+          <h3 style="font-size: 1.15rem; font-family: var(--font-heading); margin-bottom: 1rem; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;">
+            2. Neural Forensic Anomaly Checklist
+          </h3>
+          <div id="report-indicators-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+            <!-- Populated by report.js -->
+          </div>
+        </div>
+
+        <!-- Section 4: Actionable Recommendations -->
+        <div style="margin-bottom: 2.5rem;">
+          <h3 style="font-size: 1.15rem; font-family: var(--font-heading); margin-bottom: 1rem; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;">
+            3. Chain-of-Custody & Handling Protocol
+          </h3>
+          <ul style="padding-left: 1.25rem; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8;">
+            <li>Do not distribute or publish this video as verified authentic news or evidentiary media.</li>
+            <li>Request original uncompressed raw camera storage from the original provider.</li>
+            <li>Cross-examine audio tracks using physical microphone acoustic noise floor matching.</li>
+            <li>Archive this reference ID (#DS-89412) for permanent legal chain-of-custody log matching.</li>
+          </ul>
+        </div>
+
+        <!-- Section 5: Legal Disclaimer Footer -->
+        <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;">
+          <strong>Legal Notice:</strong> DeepShield AI forensic reports are generated using statistical neural network anomaly detection algorithms. While achieving 99.2% benchmark precision, results should be utilized alongside traditional digital forensics and chain-of-custody investigation methodologies.
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/report.js"></script>
+</body>
+</html>
