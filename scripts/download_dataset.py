@@ -27,7 +27,7 @@ from ai.utils.config import (
 # ----------------------------------------------------------
 
 TEMP_DIR = ROOT_DIR / "temp"
-ZIP_FILE = TEMP_DIR / DATASET_NAME
+ZIP_FILE = TEMP_DIR / (DATASET_NAME or "dataset.zip")
 
 REAL_FOLDER = RAW_DATASET / "ffpp_real"
 FAKE_FOLDER = RAW_DATASET / "ffpp_fake"
@@ -53,13 +53,8 @@ def download_dataset():
     TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
     gdown.download(
-<<<<<<< HEAD
-        DATASET_URL,
-        str(ZIP_FILE),
-=======
         id=DATASET_FILE_ID,
         output=str(ZIP_FILE),
->>>>>>> df9bdfb28df3193367eda816448692a64db7e8e5
         quiet=False
     )
 
@@ -75,7 +70,6 @@ def extract_dataset():
     with zipfile.ZipFile(ZIP_FILE, "r") as zip_ref:
         zip_ref.extractall(RAW_DATASET)
 
-<<<<<<< HEAD
     nested_dir = RAW_DATASET / "face++dataset"
     if nested_dir.exists():
         for item in nested_dir.iterdir():
@@ -88,41 +82,6 @@ def extract_dataset():
             shutil.move(str(item), str(dest))
         shutil.rmtree(nested_dir)
 
-=======
-    # Check if an extra folder exists
-    extracted_folders = [
-        folder for folder in RAW_DATASET.iterdir()
-        if folder.is_dir()
-    ]
-
-    # If there is only one folder (e.g. faceforensics++)
-    # move its contents to dataset/raw
-    if len(extracted_folders) == 1:
-
-        parent = extracted_folders[0]
-
-        if parent.name not in ["ffpp_real", "ffpp_fake"]:
-
-            print(f"Found parent folder: {parent.name}")
-
-            for item in parent.iterdir():
-
-                destination = RAW_DATASET / item.name
-
-                if destination.exists():
-                    shutil.rmtree(destination)
-
-                shutil.move(str(item), str(destination))
-
-            parent.rmdir()
-
-            print("Dataset organized successfully.")
-
-
-# ----------------------------------------------------------
-# Verify Dataset
-# ----------------------------------------------------------
->>>>>>> df9bdfb28df3193367eda816448692a64db7e8e5
 
 def verify_dataset():
 

@@ -26,3 +26,4 @@ grad-cam
 
 gdown
 python-dotenv
+pytest

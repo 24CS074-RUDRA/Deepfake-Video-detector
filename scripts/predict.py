@@ -8,7 +8,7 @@ from torchvision import transforms
 import cv2
 from retinaface import RetinaFace
 
-from ai.utils.config import ROOT_DIR, MODEL_DIR
+from ai.utils.config import FRAME_INTERVAL, IMG_SIZE, ROOT_DIR, MODEL_DIR
 from ai.models.deepfake_detector import DeepfakeDetector
 
 # Settings
@@ -33,7 +33,7 @@ def extract_faces_from_video(video_path: Path, temp_frames_dir: Path, temp_faces
         success, frame = cap.read()
         if not success:
             break
-        if frame_count % 10 == 0:
+        if frame_count % FRAME_INTERVAL == 0:
             frame_path = temp_frames_dir / f"frame_{len(saved_frames):04d}.jpg"
             cv2.imwrite(str(frame_path), frame)
             saved_frames.append(frame_path)
@@ -48,7 +48,7 @@ def extract_faces_from_video(video_path: Path, temp_frames_dir: Path, temp_faces
             # Extract face and resize
             faces = RetinaFace.extract_faces(
                 img_path=str(img_path),
-                target_size=(224, 224),
+                target_size=IMG_SIZE,
                 min_max_norm=False
             )
             if faces:
@@ -96,7 +96,7 @@ def predict_video(video_path_str: str):
         indices = np.linspace(0, n_faces - 1, SEQUENCE_LENGTH, dtype=int)
         
         transform = transforms.Compose([
-            transforms.Resize((224, 224)),
+            transforms.Resize(IMG_SIZE),
             transforms.ToTensor(),
             transforms.Normalize(
                 mean=[0.485, 0.456, 0.406],

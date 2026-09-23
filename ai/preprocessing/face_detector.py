@@ -1,63 +1,132 @@
+import logging
+import argparse
 from pathlib import Path
+
 import cv2
-from tqdm import tqdm
 from retinaface import RetinaFace
+from tqdm import tqdm
 
 from ai.utils.config import (
-    REAL_FRAMES,
+    FAKE_FACES,
     FAKE_FRAMES,
+    IMG_SIZE,
+    LOG_DIR,
     REAL_FACES,
-    FAKE_FACES
+    REAL_FRAMES,
 )
 
-def process_frames_to_faces(frames_dir: Path, faces_dir: Path):
+
+_RETINAFACE_MODEL = None
+
+
+def _get_retinaface_model():
+    global _RETINAFACE_MODEL
+    if _RETINAFACE_MODEL is None:
+        _RETINAFACE_MODEL = RetinaFace.build_model()
+    return _RETINAFACE_MODEL
+
+
+def _largest_face(image_path: Path):
+    detections = RetinaFace.detect_faces(
+        str(image_path), model=_get_retinaface_model()
+    )
+    if not isinstance(detections, dict):
+        return None
+
+    candidates = []
+    for detection in detections.values():
+        area = detection.get("facial_area")
+        if area and len(area) == 4:
+            x1, y1, x2, y2 = area
+            candidates.append((max(0, x2 - x1) * max(0, y2 - y1), area))
+
+    if not candidates:
+        return None
+
+    _, (x1, y1, x2, y2) = max(candidates, key=lambda item: item[0])
+    image = cv2.imread(str(image_path))
+    if image is None:
+        return None
+
+    height, width = image.shape[:2]
+    x1, y1 = max(0, x1), max(0, y1)
+    x2, y2 = min(width, x2), min(height, y2)
+    if x2 <= x1 or y2 <= y1:
+        return None
+    return cv2.resize(image[y1:y2, x1:x2], IMG_SIZE, interpolation=cv2.INTER_AREA)
+
+
+def process_frames_to_faces(
+    frames_dir: Path, faces_dir: Path, limit: int | None = None
+):
+    logger = logging.getLogger("face_detector")
+    summary = {"frames_processed": 0, "faces_found": 0, "failures": 0}
     if not frames_dir.exists():
         print(f"Directory not found: {frames_dir}")
-        return
+        return summary
 
-    # Find all video directories (each contains frame images)
-    video_dirs = sorted([d for d in frames_dir.iterdir() if d.is_dir()])
-    # TIP: For a quick verification run, you can slice the list (e.g., video_dirs = video_dirs[:5])
-    print(f"\nProcessing face detection on frames from {frames_dir.name} ({len(video_dirs)} videos)")
+    video_dirs = sorted(path for path in frames_dir.iterdir() if path.is_dir())
+    if limit is not None:
+        video_dirs = video_dirs[:limit]
+
+    print(
+        f"\nProcessing face detection on frames from {frames_dir.name} "
+        f"({len(video_dirs)} videos)"
+    )
 
     for video_dir in tqdm(video_dirs):
         output_video_dir = faces_dir / video_dir.name
         output_video_dir.mkdir(parents=True, exist_ok=True)
-
-        # Find all frame images
-        frame_images = sorted(video_dir.glob("*.jpg"))
-        for img_path in frame_images:
+        for img_path in sorted(video_dir.glob("*.jpg")):
+            summary["frames_processed"] += 1
             output_face_path = output_video_dir / f"{img_path.stem}_face.jpg"
-
-            # Skip if already processed
             if output_face_path.exists():
+                summary["faces_found"] += 1
                 continue
 
             try:
-                # Extract face and resize it to 224x224
-                # Set min_max_norm=False to get uint8 values for cv2.imwrite
-                faces = RetinaFace.extract_faces(
-                    img_path=str(img_path),
-                    target_size=(224, 224),
-                    min_max_norm=False
-                )
+                face = _largest_face(img_path)
+                if face is None:
+                    logger.warning("No face found: %s", img_path)
+                    continue
+                if not cv2.imwrite(str(output_face_path), face):
+                    raise OSError(f"Could not write {output_face_path}")
+                summary["faces_found"] += 1
+            except Exception as error:
+                summary["failures"] += 1
+                logger.exception("Face detection failed for %s: %s", img_path, error)
+    return summary
 
-                if faces:
-                    # Save the first detected face (usually there is 1 face per frame in deepfakes)
-                    face_rgb = faces[0]
-                    # Convert RGB to BGR for cv2.imwrite
-                    face_bgr = face_rgb[:, :, ::-1]
-                    cv2.imwrite(str(output_face_path), face_bgr)
-            except Exception as e:
-                # Keep processing other frames
-                pass
 
-def detect_faces():
+def detect_faces(limit: int | None = None):
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    logging.basicConfig(
+        filename=LOG_DIR / "face_detector.log",
+        level=logging.WARNING,
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
+
     print("\n" + "=" * 60)
     print("FACE DETECTION")
     print("=" * 60)
 
-    process_frames_to_faces(REAL_FRAMES, REAL_FACES)
-    process_frames_to_faces(FAKE_FRAMES, FAKE_FACES)
+    real_summary = process_frames_to_faces(REAL_FRAMES, REAL_FACES, limit=limit)
+    fake_summary = process_frames_to_faces(FAKE_FRAMES, FAKE_FACES, limit=limit)
+    summary = {
+        key: real_summary[key] + fake_summary[key]
+        for key in real_summary
+    }
+    print(
+        "Face summary: "
+        f"frames processed={summary['frames_processed']}, "
+        f"faces found={summary['faces_found']}, "
+        f"failures={summary['failures']}"
+    )
+    print("\nFace detection completed.")
+    return summary
 
-    print("\n✅ Face detection completed.")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Detect and crop faces from frames.")
+    parser.add_argument("--limit", type=int, default=None, help="Maximum videos per class.")
+    detect_faces(limit=parser.parse_args().limit)

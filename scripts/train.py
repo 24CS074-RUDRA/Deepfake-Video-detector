@@ -1,11 +1,12 @@
+import argparse
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from torchvision import transforms
 from pathlib import Path
 import copy
 
-from ai.utils.config import PROCESSED_DATASET, MODEL_DIR
+from ai.utils.config import IMG_SIZE, PROCESSED_DATASET, MODEL_DIR
 from ai.models.dataset import DeepfakeSequenceDataset
 from ai.models.deepfake_detector import DeepfakeDetector
 
@@ -17,7 +18,7 @@ LEARNING_RATE = 1e-4
 VAL_SPLIT = 0.2
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def train_model():
+def train_model(limit=None):
     print("=" * 60)
     print("STARTING TRAINING PIPELINE")
     print("=" * 60)
@@ -33,7 +34,7 @@ def train_model():
 
     # 2. Set up Image transforms (Standard ImageNet Normalization for EfficientNet)
     transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+        transforms.Resize(IMG_SIZE),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=[0.485, 0.456, 0.406],
@@ -46,6 +47,8 @@ def train_model():
         metadata_path=metadata_csv,
         dataset_dir=PROCESSED_DATASET,
         sequence_length=SEQUENCE_LENGTH,
+        split="train",
+        limit=limit,
         transform=transform
     )
     
@@ -53,16 +56,15 @@ def train_model():
         print("✖ Error: The processed dataset is empty. Check your face detection step output.")
         return
         
-    val_size = int(len(dataset) * VAL_SPLIT)
-    if val_size == 0 and len(dataset) > 1:
-        val_size = 1
-    train_size = len(dataset) - val_size
-    
-    # Use generator with fixed seed for reproducibility
-    generator = torch.Generator().manual_seed(42)
-    train_dataset, val_dataset = random_split(
-        dataset, [train_size, val_size], generator=generator
+    val_dataset = DeepfakeSequenceDataset(
+        metadata_path=metadata_csv,
+        dataset_dir=PROCESSED_DATASET,
+        sequence_length=SEQUENCE_LENGTH,
+        split="val",
+        limit=limit,
+        transform=transform,
     )
+    train_dataset = dataset
     
     print(f"Train samples (videos): {len(train_dataset)}")
     print(f"Validation samples (videos): {len(val_dataset)}")
@@ -109,7 +111,7 @@ def train_model():
         train_corrects = 0
         train_total = 0
         
-        for inputs, labels in train_loader:
+        for inputs, _, labels in train_loader:
             inputs = inputs.to(DEVICE)
             labels = labels.to(DEVICE)
             
@@ -139,7 +141,7 @@ def train_model():
         val_total = 0
         
         with torch.no_grad():
-            for inputs, labels in val_loader:
+            for inputs, _, labels in val_loader:
                 inputs = inputs.to(DEVICE)
                 labels = labels.to(DEVICE)
                 
@@ -170,4 +172,6 @@ def train_model():
     print("\n🎉 Training completed successfully.")
 
 if __name__ == "__main__":
-    train_model()
+    parser = argparse.ArgumentParser(description="Train the deepfake detector.")
+    parser.add_argument("--limit", type=int, default=None, help="Maximum videos per split.")
+    train_model(limit=parser.parse_args().limit)

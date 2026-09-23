@@ -14,12 +14,9 @@ from ai.utils.config import (
     REAL_VIDEOS,
     FAKE_VIDEOS,
     REAL_FRAMES,
-    FAKE_FRAMES
+    FAKE_FRAMES,
+    FRAME_INTERVAL
 )
-
-
-# Frame sampling interval (e.g., 10 means extract every 10th frame)
-FRAME_INTERVAL = 30
 
 
 def extract_video_frames(video_path: Path, output_folder: Path):
@@ -58,13 +55,15 @@ def extract_video_frames(video_path: Path, output_folder: Path):
     print(f"✔ {video_path.name} → {saved_count} frames")
 
 
-def process_folder(input_folder: Path, output_folder: Path):
+def process_folder(input_folder: Path, output_folder: Path, limit: int | None = None):
 
     if not input_folder.exists():
         print(f"Folder not found: {input_folder}")
         return
 
     videos = sorted(input_folder.glob("*.mp4"))
+    if limit is not None:
+        videos = videos[:limit]
     
     # TIP: For a quick verification run, you can slice the video list (e.g., videos = videos[:5])
     # to process only a few videos instead of the entire dataset.
@@ -78,14 +77,14 @@ def process_folder(input_folder: Path, output_folder: Path):
         extract_video_frames(video, save_folder)
 
 
-def extract_frames():
+def extract_frames(limit: int | None = None):
 
     print("\n" + "=" * 60)
     print("FRAME EXTRACTION")
     print("=" * 60)
 
-    process_folder(REAL_VIDEOS, REAL_FRAMES)
+    process_folder(REAL_VIDEOS, REAL_FRAMES, limit=limit)
 
-    process_folder(FAKE_VIDEOS, FAKE_FRAMES)
+    process_folder(FAKE_VIDEOS, FAKE_FRAMES, limit=limit)
 
     print("\n✅ Frame extraction completed.")
