@@ -16,6 +16,9 @@ def _normalize(values):
 
 def fft_heatmap(fft_image):
     array = np.asarray(fft_image.convert("L") if hasattr(fft_image, "convert") else fft_image)
+    array = np.squeeze(array)
+    if array.ndim != 2:
+        raise ValueError(f"FFT heatmap expects a 2D image, got shape {array.shape}")
     heatmap = cv2.applyColorMap((_normalize(array) * 255).astype(np.uint8), cv2.COLORMAP_JET)
     return heatmap
 
@@ -32,14 +35,14 @@ def _gradient_cam(model, rgb_frame, fft_frame, branch="frame"):
     rgb = rgb_frame.unsqueeze(0).unsqueeze(0)
     fft = fft_frame.unsqueeze(0).unsqueeze(0)
     rgb.requires_grad_(branch == "frame")
-    fft.requires_grad_(branch == "frequency")
+    fft.requires_grad_(branch in {"frequency", "freq"})
     output = model(rgb, fft)
     score = output["branch_logits"].get(branch, output["logit"]).sum()
     score.backward()
     source = rgb.grad if branch == "frame" else fft.grad
     if source is None:
         source = rgb if branch == "frame" else fft
-    heatmap = source.detach().abs().mean(dim=1)[0].cpu().numpy()
+    heatmap = source.detach().abs().mean(dim=tuple(range(source.ndim - 2))).cpu().numpy()
     return cv2.applyColorMap((_normalize(heatmap) * 255).astype(np.uint8), cv2.COLORMAP_JET)
 
 
