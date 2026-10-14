@@ -1,0 +1,49 @@
+from pathlib import Path
+
+# Root Project
+ROOT_DIR = Path(__file__).resolve().parents[2]
+
+# Dataset Paths
+RAW_DATASET = ROOT_DIR / "dataset" / "raw"
+PROCESSED_DATASET = ROOT_DIR / "dataset" / "processed"
+
+# Raw Videos
+REAL_VIDEOS = RAW_DATASET / "ffpp_real"
+FAKE_VIDEOS = RAW_DATASET / "ffpp_fake"
+
+# Extracted Frames
+REAL_FRAMES = PROCESSED_DATASET / "frames_real"
+FAKE_FRAMES = PROCESSED_DATASET / "frames_fake"
+
+# Cropped Faces
+REAL_FACES = PROCESSED_DATASET / "faces_real"
+FAKE_FACES = PROCESSED_DATASET / "faces_fake"
+REAL_FACES_FFT = PROCESSED_DATASET / "faces_real_fft"
+FAKE_FACES_FFT = PROCESSED_DATASET / "faces_fake_fft"
+
+# Shared preprocessing settings
+FRAME_INTERVAL = 30
+IMG_SIZE = (224, 224)
+RANDOM_SEED = 42
+PERFORMANCE_MIN_AUC = 0.90
+PERFORMANCE_MIN_F1 = 0.85
+
+# Models
+MODEL_DIR = ROOT_DIR / "trained_models"
+
+# Reports
+REPORT_DIR = ROOT_DIR / "reports"
+LOG_DIR = ROOT_DIR / "logs"
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+# --------------------------------------------------
+# Dataset Download Configuration
+# --------------------------------------------------
+
+DATASET_NAME = os.getenv("DATASET_NAME")
+
+DATASET_FILE_ID = os.getenv("DATASET_FILE_ID")

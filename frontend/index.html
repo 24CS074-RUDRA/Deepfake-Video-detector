@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deepfake Lens | Forensic review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #f3f0e9;
+      --panel: #fffdfa;
+      --panel-2: #f1eee7;
+      --line: #ded9d0;
+      --text: #202824;
+      --muted: #68726b;
+      --dim: #929a92;
+      --cyan: #28786b;
+      --mint: #3c8d70;
+      --coral: #b75d4d;
+      --amber: #a97936;
+      --shadow: 0 16px 42px rgba(67, 58, 45, .09);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      margin: 0; min-width: 320px; color: var(--text); font-family: "DM Sans", sans-serif;
+      background: var(--ink); background-image: radial-gradient(circle at 14% 0%, rgba(203, 180, 139, .17), transparent 30rem), radial-gradient(circle at 90% 20%, rgba(137, 177, 157, .12), transparent 28rem);
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .shell { max-width: 1440px; margin: 0 auto; padding: 22px 34px 50px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 26px; border-bottom: 1px solid rgba(91, 101, 93, .18); }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .mark { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--cyan); color: var(--cyan); border-radius: 9px; font-weight: 700; }
+    .brand strong { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+    .brand small, .eyebrow, .mono { font-family: "IBM Plex Mono", monospace; }
+    .brand small { display: block; margin-top: 3px; color: var(--dim); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+    .top-meta { display: flex; align-items: center; gap: 20px; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 11px; }
+    .health { display: inline-flex; align-items: center; gap: 8px; color: var(--mint); }
+    .health::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .health.offline { color: var(--coral); }
+    .ghost { border: 0; background: transparent; color: var(--muted); padding: 8px; }
+    .ghost:hover { color: var(--text); }
+    .hero { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding: 58px 0 38px; }
+    .eyebrow { color: var(--cyan); font-size: 11px; letter-spacing: .15em; text-transform: uppercase; }
+    h1 { max-width: 720px; margin: 13px 0 15px; font-family: "DM Serif Display", Georgia, serif; font-size: clamp(38px, 5vw, 68px); font-weight: 400; line-height: .98; letter-spacing: 0; }
+    .lede { max-width: 600px; margin: 0; color: var(--muted); font-size: 16px; line-height: 1.65; }
+    .facts { display: flex; flex-wrap: wrap; gap: 22px; min-width: 310px; padding: 18px 0 4px; border-top: 1px solid var(--line); }
+    .fact { display: grid; gap: 5px; }
+    .fact b { font-family: "IBM Plex Mono", monospace; font-size: 16px; font-weight: 500; }
+    .fact span { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+    .workspace { display: grid; grid-template-columns: minmax(320px, .78fr) minmax(460px, 1.45fr); gap: 18px; align-items: start; }
+    .panel { background: rgba(255, 253, 250, .9); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+    .intake { padding: 22px; position: sticky; top: 18px; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+    .panel-title { margin: 0; font-size: 14px; letter-spacing: .03em; }
+    .panel-index { color: var(--dim); font: 11px "IBM Plex Mono", monospace; }
+    .dropzone { min-height: 330px; display: grid; align-content: center; justify-items: center; gap: 13px; padding: 32px 24px; border: 1px dashed #a9bdb2; border-radius: 11px; background: linear-gradient(145deg, rgba(235, 245, 239, .78), rgba(255, 253, 250, .5)); text-align: center; transition: .2s ease; }
+    .dropzone.dragging, .dropzone:hover { border-color: var(--cyan); background-color: rgba(224, 239, 229, .72); }
+    .upload-glyph { width: 54px; height: 54px; display: grid; place-items: center; border: 1px solid #a9bdb2; border-radius: 15px; color: var(--cyan); font-size: 22px; }
+    .dropzone h2 { margin: 4px 0 0; font-size: 18px; }
+    .dropzone p { max-width: 260px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .choose { padding: 11px 16px; border: 1px solid var(--cyan); border-radius: 8px; background: var(--cyan); color: #fffdfa; font-weight: 700; }
+    .choose:hover { filter: brightness(1.08); }
+    .file-chip { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 13px; margin-top: 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2); }
+    .file-chip span:first-child { color: var(--cyan); font-size: 18px; }
+    .file-chip strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+    .file-chip small { display: block; margin-top: 3px; color: var(--dim); font: 10px "IBM Plex Mono", monospace; }
+    .analyze { width: 100%; margin-top: 16px; padding: 14px; border: 0; border-radius: 8px; background: #e6e1d8; color: var(--dim); font-weight: 700; letter-spacing: .02em; }
+    .analyze.ready { background: var(--cyan); color: #fffdfa; }
+    .analyze:disabled { cursor: not-allowed; }
+    .note { display: flex; gap: 9px; margin: 17px 2px 0; color: var(--dim); font-size: 11px; line-height: 1.5; }
+    .console { min-height: 635px; overflow: hidden; }
+    .console-empty { min-height: 635px; display: grid; place-items: center; align-content: center; gap: 12px; padding: 40px; text-align: center; }
+    .console-empty .empty-mark { color: var(--cyan); font: 34px "IBM Plex Mono", monospace; opacity: .75; }
+    .console-empty h2 { margin: 0; font-size: 22px; }
+    .console-empty p { max-width: 330px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .console-body { padding: 22px; }
+    .verdict { display: grid; grid-template-columns: minmax(170px, .8fr) 1fr; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+    .verdict-label { display: flex; align-items: center; gap: 11px; margin: 6px 0 7px; color: var(--coral); font-size: clamp(30px, 5vw, 48px); font-weight: 700; letter-spacing: 0; }
+    .verdict-label.real { color: var(--mint); }
+    .verdict-dot { width: 11px; height: 11px; border-radius: 50%; background: currentColor; box-shadow: 0 0 18px currentColor; }
+    .verdict-copy { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .score-card { display: grid; align-content: center; gap: 9px; padding: 17px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); }
+    .score-row { display: flex; justify-content: space-between; color: var(--muted); font: 11px "IBM Plex Mono", monospace; }
+    .score-row strong { color: var(--text); font-size: 18px; font-weight: 500; }
+    .meter { height: 9px; overflow: hidden; border-radius: 9px; background: #e1e5de; }
+    .meter i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--coral); transition: width .8s ease; }
+    .real .meter i { background: var(--mint); }
+    .threshold { color: var(--dim); font: 10px "IBM Plex Mono", monospace; }
+    .section { padding: 21px 0; border-bottom: 1px solid var(--line); }
+    .section:last-child { border-bottom: 0; padding-bottom: 0; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .section-head h3 { margin: 0; font-size: 13px; }
+    .section-head span { color: var(--dim); font: 10px "IBM Plex Mono", monospace; }
+    .section-note { margin: -4px 0 14px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .interpretation { margin: 0 0 16px; padding: 14px 16px; border-left: 3px solid var(--cyan); background: rgba(241, 238, 231, .72); color: var(--text); font-size: 13px; line-height: 1.6; }
+    .report-link { color: var(--cyan); font: 10px "IBM Plex Mono", monospace; text-decoration: none; text-transform: uppercase; }
+    .report-link:hover { text-decoration: underline; }
+    .findings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .finding { padding: 13px; border: 1px solid var(--line); border-radius: 8px; background: rgba(241, 238, 231, .5); }
+    .finding strong { display: block; margin-bottom: 7px; font-size: 12px; }
+    .finding b { display: block; margin-bottom: 7px; color: var(--cyan); font: 16px "IBM Plex Mono", monospace; }
+    .finding p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .limitations { margin: 13px 0 0; color: var(--dim); font-size: 10px; line-height: 1.5; }
+    .ai-analysis { padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); }
+    .ai-analysis-head { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+    .ai-analysis-mark { color: var(--cyan); font-size: 18px; }
+    .ai-analysis h3 { margin: 0; font-size: 14px; }
+    .ai-analysis p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .indicator-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+    .indicator { padding: 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .indicator strong { display: block; margin-bottom: 5px; font-size: 11px; }
+    .indicator b { display: block; margin-bottom: 7px; color: var(--cyan); font: 10px "IBM Plex Mono", monospace; text-transform: uppercase; }
+    .indicator p { color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .frames { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .frame { position: relative; aspect-ratio: 1.25; overflow: hidden; border: 1px solid var(--line); border-radius: 7px; background: #e6e2da; }
+    .frame img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .86; }
+    .frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 60%, rgba(31, 38, 33, .78)); }
+    .frame figcaption { position: absolute; z-index: 1; right: 7px; bottom: 5px; left: 7px; display: flex; justify-content: space-between; color: var(--text); font: 9px "IBM Plex Mono", monospace; }
+    .branch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .branch { padding: 12px; border: 1px solid var(--line); border-radius: 8px; }
+    .branch label { display: block; margin-bottom: 11px; color: var(--muted); font: 10px "IBM Plex Mono", monospace; }
+    .branch b { display: block; margin-bottom: 7px; font-size: 16px; font-weight: 500; }
+    .branch .meter { height: 5px; }
+    .branch .meter i { background: var(--cyan); }
+    .timeline { position: relative; display: grid; grid-template-columns: repeat(10, minmax(24px, 1fr)); align-items: end; gap: 7px; min-height: 148px; padding: 24px 4px 24px; border-bottom: 1px solid #bdc9c1; }
+    .timeline-item { position: relative; display: flex; height: 100px; align-items: end; justify-content: center; }
+    .timeline-bar { width: min(22px, 72%); min-height: 5px; border-radius: 5px 5px 2px 2px; background: #9eb8aa; transition: height .35s ease; }
+    .timeline-item.high .timeline-bar { background: var(--coral); }
+    .timeline-item span { position: absolute; color: var(--dim); font: 9px "IBM Plex Mono", monospace; white-space: nowrap; }
+    .timeline-item .timeline-score { top: 0; color: var(--muted); transform: translateY(-100%); font-size: 8px; }
+    .timeline-item .timeline-index { bottom: -20px; }
+    .error { margin-top: 14px; color: var(--coral); font: 11px "IBM Plex Mono", monospace; line-height: 1.5; }
+    .loading { display: inline-flex; align-items: center; gap: 8px; }
+    .loading::before { content: ""; width: 8px; height: 8px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 900px) { .shell { padding: 18px 18px 36px; } .hero { display: block; padding: 42px 0 30px; } .facts { margin-top: 28px; } .workspace { grid-template-columns: 1fr; } .intake { position: static; } .console, .console-empty { min-height: 0; } }
+    @media (max-width: 560px) { .top-meta { gap: 7px; font-size: 9px; } .top-meta .mono { display: none; } h1 { font-size: 42px; } .verdict { grid-template-columns: 1fr; } .frames { grid-template-columns: repeat(2, 1fr); } .frames .frame:last-child { display: none; } .branch-grid, .findings, .indicator-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><div class="mark">DL</div><div><strong>Deepfake Lens</strong><small>Explainable video forensics</small></div></div>
+      <div class="top-meta"><span class="mono">MODEL / full_v3</span><span id="health" class="health">checking backend</span><button id="reset" class="ghost" type="button" title="Reset analysis">Reset</button></div>
+    </header>
+
+    <section class="hero">
+      <div><div class="eyebrow">Forensic review workspace</div><h1>Find the signal<br>behind the face.</h1><p class="lede">A three-branch model examines spatial detail, frequency artifacts, and temporal consistency to produce a verdict you can inspect.</p></div>
+      <div class="facts"><div class="fact"><b>0.893</b><span>held-out AUC</span></div><div class="fact"><b>0.802</b><span>F1 score</span></div><div class="fact"><b>3×</b><span>evidence branches</span></div></div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel intake">
+        <div class="panel-head"><h2 class="panel-title">Submit evidence</h2><span class="panel-index">01 / INPUT</span></div>
+        <div id="dropzone" class="dropzone">
+          <div class="upload-glyph">↑</div><h2>Drop a video here</h2><p>MP4, MOV, AVI, or WebM. Your file is processed locally by the active analysis service.</p>
+          <button id="choose" class="choose" type="button">Choose video</button><input id="file" type="file" accept="video/mp4,video/quicktime,video/x-msvideo,video/webm" hidden>
+        </div>
+        <div id="file-chip" class="file-chip" hidden><span>▣</span><div><strong id="file-name"></strong><small id="file-size"></small></div></div>
+        <button id="analyze" class="analyze" type="button" disabled>Analyze video</button>
+        <div id="error" class="error" hidden></div>
+        <p class="note"><span>◌</span><span>Analysis can take longer on CPU because every sampled face is inspected for explainability.</span></p>
+      </aside>
+
+      <section id="console" class="panel console">
+        <div id="empty" class="console-empty"><div class="empty-mark">[ / ]</div><h2>Evidence console ready</h2><p>Choose a video to populate the verdict and its supporting visual evidence.</p></div>
+        <div id="loading" class="console-empty" hidden><div class="empty-mark loading">analyzing</div><h2>Tracing the signal</h2><p id="loading-copy">Extracting faces, comparing branches, and building the explanation.</p></div>
+        <div id="results" class="console-body" hidden>
+          <div id="verdict" class="verdict"><div><div class="eyebrow">Model verdict</div><div id="label" class="verdict-label"><span class="verdict-dot"></span><span>FAKE</span></div><p id="verdict-copy" class="verdict-copy"></p></div><div class="score-card"><div class="score-row"><span>CONFIDENCE</span><strong id="confidence">--</strong></div><div class="meter"><i id="confidence-meter"></i></div><div class="threshold">Decision threshold <span id="threshold">--</span></div></div></div>
+          <section class="section"><div class="ai-analysis"><div class="ai-analysis-head"><span class="ai-analysis-mark">◉</span><h3>AI analysis</h3></div><p id="ai-analysis-text"></p><div id="indicator-grid" class="indicator-grid"></div></div></section>
+          <section class="section"><div class="section-head"><h3>Forensic report</h3><a id="report-download" class="report-link" hidden download="forensic_report.json">Download JSON</a></div><p id="report-summary" class="section-note"></p><p id="report-interpretation" class="interpretation"></p><div id="findings" class="findings"></div><p id="limitations" class="limitations"></p></section>
+          <section class="section"><div class="section-head"><h3>Detected frame evidence</h3><span id="frame-count">--</span></div><p id="frame-explanation" class="section-note"></p><div id="frames" class="frames"></div></section>
+          <section class="section"><div class="section-head"><h3>Branch contribution</h3><span>SHAP / ATTRIBUTION</span></div><div id="branches" class="branch-grid"></div></section>
+          <section class="section"><div class="section-head"><h3>Suspicion timeline</h3><span>FRAME SEQUENCE</span></div><div id="timeline" class="timeline"><div class="timeline-track"></div></div></section>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const state = { file: null };
+    const formatPercent = (value) => `${(Math.min(Math.max(Number(value) || 0, 0), 1) * 100).toFixed(1)}%`;
+    const prettyName = (key) => key.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+    async function checkHealth() {
+      try {
+        const response = await fetch("/api/health");
+        const data = await response.json();
+        $("health").textContent = data.ready ? `${data.torch_device_name || data.torch_device || "model"} ready` : "model unavailable";
+        $("health").classList.toggle("offline", !data.ready);
+      } catch (error) {
+        $("health").textContent = "backend offline";
+        $("health").classList.add("offline");
+      }
+    }
+
+    function setFile(file) {
+      if (!file) return;
+      state.file = file;
+      $("file-name").textContent = file.name;
+      $("file-size").textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+      $("file-chip").hidden = false;
+      $("analyze").disabled = false;
+      $("analyze").classList.add("ready");
+      $("error").hidden = true;
+    }
+
+    function reset() {
+      state.file = null; $("file").value = ""; $("file-chip").hidden = true; $("analyze").disabled = true; $("analyze").classList.remove("ready"); $("error").hidden = true;
+      $("empty").hidden = false; $("loading").hidden = true; $("results").hidden = true;
+    }
+
+    function renderBranches(values) {
+      const entries = Array.isArray(values)
+        ? values.map((value, index) => [`branch ${index + 1}`, value])
+        : Object.entries(values || {}).filter(([name, value]) => name !== "method" && Number.isFinite(Number(value)));
+      const maximum = Math.max(...entries.map(([, value]) => Math.abs(Number(value) || 0)), 0);
+      $("branches").innerHTML = entries.map(([name, value]) => {
+        const raw = Number(value) || 0;
+        const display = Math.abs(raw) < 0.001 && raw !== 0 ? raw.toExponential(2) : raw.toFixed(3);
+        const relative = maximum ? Math.abs(raw) / maximum * 100 : 0;
+        return `<div class="branch"><label>${prettyName(name)}</label><b>${display}</b><div class="meter"><i style="width:${relative}%"></i></div><small class="mono">${maximum ? (Math.abs(raw) / maximum * 100).toFixed(1) : "0.0"}% relative</small></div>`;
+      }).join("") || '<div class="branch"><label>Attribution</label><b>n/a</b></div>';
+    }
+
+    function renderTimeline(values) {
+      const series = (Array.isArray(values) ? [values] : Object.values(values || {})).map((branch) => Array.isArray(branch?.[0]) ? branch[0] : branch);
+      const length = Math.max(0, ...series.map((branch) => Array.isArray(branch) ? branch.length : 0));
+      const points = Array.from({ length }, (_, index) => Math.max(...series.map((branch) => Number(branch?.[index] || 0))));
+      const maximum = Math.max(...points, 0.0001);
+      const cutoff = points.length ? [...points].sort((a, b) => b - a)[Math.min(3, points.length - 1)] : 0;
+      $("timeline").innerHTML = points.length
+        ? points.map((value, index) => `<div class="timeline-item ${value >= cutoff ? "high" : ""}"><span class="timeline-score">${formatPercent(value)}</span><div class="timeline-bar" style="height:${Math.max(Math.round(value / maximum * 100), 5)}px"></div><span class="timeline-index">F${index + 1}</span></div>`).join("")
+        : '<p class="section-note">No suspicion timeline was returned.</p>';
+    }
+
+    function renderReport(data) {
+      const report = data.forensic_report || {};
+      const findings = report.findings || [];
+      const indicators = data.key_indicators || report.key_indicators || [];
+      $("ai-analysis-text").textContent = data.ai_analysis || report.interpretation || data.interpretation || "No AI analysis was returned.";
+      $("indicator-grid").innerHTML = indicators.map((indicator) => `<article class="indicator"><strong>${indicator.label}</strong><b>${indicator.status}${indicator.score == null ? "" : ` · ${formatPercent(indicator.score)}`}</b><p>${indicator.description}</p></article>`).join("");
+      $("report-summary").textContent = `${report.assessment || data.label || "UNKNOWN"} assessment from spatial, frequency, and temporal analysis. Attribution: ${report.attribution_method || data.branch_contributions?.method || "model fusion"}.`;
+      $("report-interpretation").textContent = report.interpretation || data.interpretation || "No interpretation was returned.";
+      $("findings").innerHTML = findings.map((finding) => `<article class="finding"><strong>${finding.modality}</strong><b>${formatPercent(finding.score)}</b><p>${finding.finding}</p></article>`).join("") || '<p class="section-note">No modality findings were returned.</p>';
+      $("limitations").textContent = (report.limitations || []).join(" ");
+      if (data.report_url) { $("report-download").href = data.report_url; $("report-download").hidden = false; }
+    }
+
+    function renderResult(data) {
+      const isReal = data.label === "REAL";
+      $("verdict").classList.toggle("real", isReal);
+      $("label").classList.toggle("real", isReal);
+      $("label").querySelector("span:last-child").textContent = data.label || "UNKNOWN";
+      $("verdict-copy").textContent = `${data.filename || "Video"} · ${data.detected_frames?.length || 0} explanation frames · ${data.device_name || data.device || "CPU"}`;
+      $("confidence").textContent = formatPercent(data.confidence);
+      $("confidence-meter").style.width = `${Math.min(Number(data.confidence || 0) * 100, 100)}%`;
+      $("threshold").textContent = Number(data.decision_threshold || 0).toFixed(4);
+      renderReport(data);
+      const frames = data.detected_frames || [];
+      $("frame-count").textContent = `${frames.length} SAMPLED`;
+      $("frame-explanation").textContent = frames.length
+        ? "These are the sampled frames with the highest per-frame fake scores. The blue heatmap overlay marks image regions used by Grad-CAM, so a frame is evidence because the model assigned it greater suspicion than the other sampled frames."
+        : "No frame overlays were returned.";
+      $("frames").innerHTML = frames.map((frame) => `<figure class="frame"><img src="${frame.url}" alt="Grad-CAM explanation for frame ${frame.frame_index}"><figcaption><span>FRAME ${frame.frame_index}</span><span>${formatPercent(frame.score)}</span></figcaption></figure>`).join("") || '<p class="verdict-copy">No frame overlays were returned.</p>';
+      renderBranches(data.branch_contributions); renderTimeline(data.suspicion_timeline);
+    }
+
+    async function analyze() {
+      if (!state.file) return;
+      $("empty").hidden = true; $("results").hidden = true; $("loading").hidden = false; $("analyze").disabled = true; $("analyze").classList.remove("ready"); $("error").hidden = true;
+      const form = new FormData(); form.append("file", state.file);
+      try {
+        const response = await fetch("/api/analyze", { method: "POST", body: form });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "The analysis service returned an error.");
+        renderResult(data); $("loading").hidden = true; $("results").hidden = false;
+      } catch (error) {
+        $("loading").hidden = true; $("empty").hidden = false; $("error").textContent = error.message; $("error").hidden = false;
+      } finally { $("analyze").disabled = false; if (state.file) $("analyze").classList.add("ready"); }
+    }
+
+    $("choose").addEventListener("click", () => $("file").click()); $("file").addEventListener("change", (event) => setFile(event.target.files[0])); $("analyze").addEventListener("click", analyze); $("reset").addEventListener("click", reset);
+    ["dragenter", "dragover"].forEach((eventName) => $("dropzone").addEventListener(eventName, (event) => { event.preventDefault(); $("dropzone").classList.add("dragging"); })); ["dragleave", "drop"].forEach((eventName) => $("dropzone").addEventListener(eventName, (event) => { event.preventDefault(); $("dropzone").classList.remove("dragging"); })); $("dropzone").addEventListener("drop", (event) => setFile(event.dataTransfer.files[0]));
+    checkHealth();
+  </script>
+</body>
+</html>
